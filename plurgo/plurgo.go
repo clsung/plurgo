@@ -1,8 +1,7 @@
-package main
+package plurgo
 
 import (
     "encoding/json"
-    "flag"
     "fmt"
     "github.com/garyburd/go-oauth/oauth"
     "io/ioutil"
@@ -30,10 +29,8 @@ var oauthClient = oauth.Client {
 var plurkOAuth PlurkCredentials
 var signinOAuthClient oauth.Client
 
-var credPath = flag.String("config", "config.json", "Path to configuration file containing the application's credentials.")
-
-func readCredentials() (*PlurkCredentials, error) {
-    b, err := ioutil.ReadFile(*credPath)
+func ReadCredentials(credPath string) (*PlurkCredentials, error) {
+    b, err := ioutil.ReadFile(credPath)
     if err != nil {
 	return nil, err
     }
@@ -59,7 +56,7 @@ func doAuth(requestToken *oauth.Credentials) (*oauth.Credentials, error) {
     return accessToken, nil
 }
 
-func getAccessToken(cred *PlurkCredentials) (*oauth.Credentials, bool, error) {
+func GetAccessToken(cred *PlurkCredentials) (*oauth.Credentials, bool, error) {
     oauthClient.Credentials.Token = cred.ConsumerToken
     oauthClient.Credentials.Secret = cred.ConsumerSecret
 
@@ -86,7 +83,7 @@ func getAccessToken(cred *PlurkCredentials) (*oauth.Credentials, bool, error) {
     return token, authorized, nil
 }
 
-func callAPI(token *oauth.Credentials, _url string, opt map[string]string) ([]byte, error) {
+func CallAPI(token *oauth.Credentials, _url string, opt map[string]string) ([]byte, error) {
     var apiURL = baseURL + _url
     param := make(url.Values)
     for k, v := range opt {
@@ -109,38 +106,4 @@ func callAPI(token *oauth.Credentials, _url string, opt map[string]string) ([]by
 	return nil, err
     }
     return body, nil
-}
-
-func main() {
-    flag.Parse()
-    plurkOAuth, err := readCredentials()
-    if err != nil {
-	log.Fatalf("Error reading credential, %v", err)
-    }
-    accessToken, authorized, err := getAccessToken(plurkOAuth)
-
-    if authorized {
-	bytes, err := json.MarshalIndent(plurkOAuth, "", "  ")
-	if err != nil {
-	    log.Fatalf("failed to store credential: %v", err)
-	}
-	err = ioutil.WriteFile(*credPath, bytes, 0700)
-	if err != nil {
-	    log.Fatal("failed to write credential: %v", err)
-	}
-    }
-    result, err := callAPI(accessToken, "/APP/Profile/getOwnProfile", map[string]string{})
-    if err != nil {
-	log.Fatalf("failed: %v", err)
-    }
-    fmt.Println(string(result))
-    var data = map[string]string{}
-    data["content"] = "Test plurkAdd from plurkgo"
-    data["qualifier"] = "shares"
-    data["lang"] = "ja"
-    result, err = callAPI(accessToken, "/APP/Timeline/plurkAdd", data)
-    if err != nil {
-	log.Fatalf("failed: %v", err)
-    }
-    fmt.Println(string(result))
 }
