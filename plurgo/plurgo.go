@@ -30,6 +30,10 @@ var plurkOAuth PlurkCredentials
 var signinOAuthClient oauth.Client
 
 func ReadCredentials(credPath string) (*PlurkCredentials, error) {
+    return readCredentials(credPath)
+}
+
+func readCredentials(credPath string) (*PlurkCredentials, error) {
     b, err := ioutil.ReadFile(credPath)
     if err != nil {
 	return nil, err
@@ -56,7 +60,16 @@ func doAuth(requestToken *oauth.Credentials) (*oauth.Credentials, error) {
     return accessToken, nil
 }
 
+func getAccessToken(impl_ func(*PlurkCredentials) (*oauth.Credentials, bool, error),
+    cred *PlurkCredentials) (*oauth.Credentials, bool, error) {
+    return impl_(cred)
+}
+
 func GetAccessToken(cred *PlurkCredentials) (*oauth.Credentials, bool, error) {
+    return getAccessToken(getAccessToken_, cred)
+}
+
+func getAccessToken_(cred *PlurkCredentials) (*oauth.Credentials, bool, error) {
     oauthClient.Credentials.Token = cred.ConsumerToken
     oauthClient.Credentials.Secret = cred.ConsumerSecret
 
@@ -83,7 +96,16 @@ func GetAccessToken(cred *PlurkCredentials) (*oauth.Credentials, bool, error) {
     return token, authorized, nil
 }
 
+func callAPI(impl_ func(*oauth.Credentials, string,  map[string]string)([]byte, error),
+    token *oauth.Credentials, _url string, opt map[string]string) ([]byte, error) {
+    return impl_(token, _url, opt)
+}
+
 func CallAPI(token *oauth.Credentials, _url string, opt map[string]string) ([]byte, error) {
+    return callAPI(callAPI_, token, _url, opt)
+}
+
+func callAPI_(token *oauth.Credentials, _url string, opt map[string]string) ([]byte, error) {
     var apiURL = baseURL + _url
     param := make(url.Values)
     for k, v := range opt {
