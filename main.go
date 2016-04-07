@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	plurgo "github.com/kkdai/plurgo/plurkgo"
+	plurgo "github.com/clsung/plurgo/plurkgo"
 )
 
 var credPath = flag.String("config", "config.json", "Path to configuration file containing the application's credentials.")
