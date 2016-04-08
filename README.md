@@ -21,6 +21,9 @@ Example
 % go run plurgo.go -config=config.json
 ```
 
+Build Status
+----
+[![Build Status](https://travis-ci.org/clsung/plurgo.svg?branch=master)](https://travis-ci.org/clsung/plurgo)
 
 Meta
 ----
