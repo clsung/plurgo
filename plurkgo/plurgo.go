@@ -19,12 +19,12 @@ type PlurkCredentials struct {
 	AccessSecret   string
 }
 
-var baseURL = "http://www.plurk.com"
+var baseURL = "https://www.plurk.com"
 
 var oauthClient = oauth.Client{
-	TemporaryCredentialRequestURI: "http://www.plurk.com/OAuth/request_token",
-	ResourceOwnerAuthorizationURI: "http://www.plurk.com/OAuth/authorize",
-	TokenRequestURI:               "http://www.plurk.com/OAuth/access_token",
+	TemporaryCredentialRequestURI: "https://www.plurk.com/OAuth/request_token",
+	ResourceOwnerAuthorizationURI: "https://www.plurk.com/OAuth/authorize",
+	TokenRequestURI:               "https://www.plurk.com/OAuth/access_token",
 }
 
 var plurkOAuth PlurkCredentials
