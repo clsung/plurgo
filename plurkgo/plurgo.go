@@ -119,14 +119,14 @@ func callAPI_(token *oauth.Credentials, _url string, opt map[string]string) ([]b
 		return nil, err
 	}
 	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		log.Println("failed to call API err=200:", err, apiURL, param)
-		return nil, err
-	}
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		log.Println("failed to get response:", err)
 		return nil, err
+	}
+	if res.StatusCode != 200 {
+		log.Println("failed to call API err=200:", err, apiURL, param)
+		return nil, fmt.Errorf("%s", string(body))
 	}
 	return body, nil
 }
